@@ -18,7 +18,26 @@ app.message('test', async ({ message, say }) => {
   const channelList = await app.client.conversations.list({
     token: process.env.SLACK_BOT_TOKEN,
   })
-  console.log(channelList)
+
+  const cl = channelList.channels.map(c => {
+    return {
+      id: c.id,
+      name: c.name
+    }
+  })
+
+  console.log('cl', cl)
+
+  const summary = []
+  cl.forEach(async c => {
+    const history = await app.client.conversations.history({
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: c.id
+    })
+    summary.push(history.messages)
+  })
+
+  console.log('@@@', summary)
 });
 
 (async () => {
