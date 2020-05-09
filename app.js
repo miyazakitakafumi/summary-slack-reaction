@@ -1,6 +1,5 @@
 const { App } = require('@slack/bolt');
 require('dotenv').config();
-// const helper = require('./func.js')
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -8,36 +7,21 @@ const app = new App({
 });
 
 app.message('ひとちゃん', async ({ message, say }) => {
-  // say() sends a message to the channel where the event was triggered
   await say(`ゔぇゔぇゔぇゔぇ たみぼうず おはよう <@${message.user}>!`);
 });
 
 app.message('test', async ({ message, say }) => {
-  // const result = await app.client.conversations.history(options)
-  // console.log(result)
   const channelList = await app.client.conversations.list({
     token: process.env.SLACK_BOT_TOKEN,
   })
 
-  const cl = channelList.channels.map(c => {
-    return {
-      id: c.id,
-      name: c.name
-    }
-  })
+  const allMessages = await getAllMessages(app, channelList.channels)
 
-  console.log('cl', cl)
+  const reactions = allMessages.filter(m => m.reactions !== undefined).reduce((prev, current) => {
+    return [...prev, ...current.reactions]
+  }, [])
 
-  const summary = []
-  cl.forEach(async c => {
-    const history = await app.client.conversations.history({
-      token: process.env.SLACK_BOT_TOKEN,
-      channel: c.id
-    })
-    summary.push(history.messages)
-  })
-
-  console.log('@@@', summary)
+  console.log(reactions)
 });
 
 (async () => {
@@ -45,3 +29,19 @@ app.message('test', async ({ message, say }) => {
 
   console.log('⚡️ Bolt app is running!');
 })();
+
+
+const getAllMessages = async (app, channels) => {
+  let result = []
+
+  await Promise.all(channels.map(async c => {
+    const historyPerChannel = await app.client.conversations.history({
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: c.id
+    })
+
+    result = [...result, ...historyPerChannel.messages]
+  }))
+
+  return result
+}
