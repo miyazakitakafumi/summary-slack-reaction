@@ -11,7 +11,6 @@ const getUserRealName = (userList = [], id) => {
   return user === undefined ? id : user.real_name;
 };
 
-
 module.exports = {
   getUserList,
   getUserRealName,

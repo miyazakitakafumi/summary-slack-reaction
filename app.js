@@ -6,7 +6,7 @@ const history = require('./history');
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
 app.message('ひとちゃん', async ({ message, say }) => {
@@ -20,22 +20,24 @@ app.message('test', async ({ message, say }) => {
     token: process.env.SLACK_BOT_TOKEN,
   });
 
-  const allMessages = await getAllMessages(app, channelList.channels);
+  const allMessages = await history.getAllMessages(app, channelList.channels);
 
   // console.log(allMessages);
 
-  const reactions = allMessages.filter(m => m.reactions !== undefined).reduce((prev, current) => {
-    return [...prev, ...current.reactions]
-  }, [])
+  const reactions = allMessages
+    .filter(m => m.reactions !== undefined)
+    .reduce((prev, current) => {
+      return [...prev, ...current.reactions];
+    }, []);
 
   const reactionsModified = reactions.map(r => {
     return {
       ...r,
-      users: r.users.map(u => user.getUserRealName(userList, u))
-    }
-  })
+      users: r.users.map(u => user.getUserRealName(userList, u)),
+    };
+  });
 
-  console.log(reactionsModified)
+  console.log(reactionsModified);
 });
 
 (async () => {
@@ -43,17 +45,3 @@ app.message('test', async ({ message, say }) => {
 
   console.log('⚡️ Bolt app is running!');
 })();
-
-
-const getAllMessages = async (app, channels) => {
-  let result = [];
-
-
-  await Promise.all(channels.map(async c => {
-    const historyPerChannel = await app.client.conversations.history(history.createOption(c.id));
-
-    result = [...result, ...historyPerChannel.messages]
-  }));
-
-  return result
-};
