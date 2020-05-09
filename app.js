@@ -9,11 +9,7 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
-app.message('ひとちゃん', async ({ message, say }) => {
-  await say(`ゔぇゔぇゔぇゔぇ たみぼうず おはよう <@${message.user}>!`);
-});
-
-app.message('test', async ({ message, say }) => {
+const main = async () => {
   const userList = await user.getUserList(app);
 
   const channelList = await app.client.conversations.list({
@@ -38,10 +34,6 @@ app.message('test', async ({ message, say }) => {
   });
 
   console.log(reactionsModified);
-});
+};
 
-(async () => {
-  await app.start(process.env.PORT || 3000);
-
-  console.log('⚡️ Bolt app is running!');
-})();
+main();
