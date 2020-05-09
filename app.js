@@ -1,8 +1,9 @@
 require('dotenv').config();
 const { App } = require('@slack/bolt');
 const dayjs = require('dayjs');
-const user = require('./user');
+const user = require('./member');
 const history = require('./history');
+const channel = require('./channel');
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -10,17 +11,11 @@ const app = new App({
 });
 
 const main = async () => {
-  const userList = await user.getUserList(app);
+  const members = await user.getMembers(app);
+  const channels = await channel.getChannel(app);
+  const messages = await history.getAllMessages(app, channels);
 
-  const channelList = await app.client.conversations.list({
-    token: process.env.SLACK_BOT_TOKEN,
-  });
-
-  const allMessages = await history.getAllMessages(app, channelList.channels);
-
-  // console.log(allMessages);
-
-  const reactions = allMessages
+  const reactions = messages
     .filter(m => m.reactions !== undefined)
     .reduce((prev, current) => {
       return [...prev, ...current.reactions];
@@ -29,7 +24,7 @@ const main = async () => {
   const reactionsModified = reactions.map(r => {
     return {
       ...r,
-      users: r.users.map(u => user.getUserRealName(userList, u)),
+      users: r.users.map(u => user.getUserRealName(members, u)),
     };
   });
 

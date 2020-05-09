@@ -1,4 +1,4 @@
-const getUserList = async app => {
+const getMembers = async app => {
   const response = await app.client.users.list({
     token: process.env.SLACK_BOT_TOKEN,
   });
@@ -12,6 +12,6 @@ const getUserRealName = (userList = [], id) => {
 };
 
 module.exports = {
-  getUserList,
+  getMembers,
   getUserRealName,
 };

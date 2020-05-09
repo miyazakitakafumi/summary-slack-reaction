@@ -9,7 +9,8 @@ const getAllMessages = async (app, channels) => {
         createOption(c.id)
       );
 
-      if(historyPerChannel.ok) result = [...result, ...historyPerChannel.messages];
+      if (historyPerChannel.ok)
+        result = [...result, ...historyPerChannel.messages];
     })
   );
 
