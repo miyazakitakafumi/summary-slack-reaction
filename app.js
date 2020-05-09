@@ -1,5 +1,9 @@
-const { App } = require('@slack/bolt');
 require('dotenv').config();
+const { App } = require('@slack/bolt');
+const dayjs = require('dayjs');
+const history = require('./history')
+
+console.log(dayjs('').unix());
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -16,6 +20,7 @@ app.message('test', async ({ message, say }) => {
   })
 
   const allMessages = await getAllMessages(app, channelList.channels)
+  // console.log(allMessages)
 
   const reactions = allMessages.filter(m => m.reactions !== undefined).reduce((prev, current) => {
     return [...prev, ...current.reactions]
@@ -35,10 +40,7 @@ const getAllMessages = async (app, channels) => {
   let result = []
 
   await Promise.all(channels.map(async c => {
-    const historyPerChannel = await app.client.conversations.history({
-      token: process.env.SLACK_BOT_TOKEN,
-      channel: c.id
-    })
+    const historyPerChannel = await app.client.conversations.history(history.createOption(c.id))
 
     result = [...result, ...historyPerChannel.messages]
   }))
