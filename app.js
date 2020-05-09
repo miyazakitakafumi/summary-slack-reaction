@@ -4,6 +4,7 @@ const dayjs = require('dayjs');
 const user = require('./member');
 const history = require('./history');
 const channel = require('./channel');
+const reaction = require('./reaction');
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -28,7 +29,9 @@ const main = async () => {
     };
   });
 
-  console.log(reactionsModified);
+  const result = reaction.summaryReaction(reactionsModified);
+
+  console.log(result);
 };
 
 main();
