@@ -13,8 +13,10 @@
     "@slack/bolt": "^2.0.1",
     "dayjs": "^1.8.26",
     "dotenv": "^8.2.0",
+    "nodemon": "^2.0.3"
+  },
+  "devDependencies": {
     "eslint": "^7.0.0",
-    "nodemon": "^2.0.3",
     "prettier-eslint": "^9.0.1",
     "prettier-eslint-cli": "^5.0.0"
   }
