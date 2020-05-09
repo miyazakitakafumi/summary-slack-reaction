@@ -1,6 +1,5 @@
 require('dotenv').config();
 const { App } = require('@slack/bolt');
-const dayjs = require('dayjs');
 const user = require('./member');
 const history = require('./history');
 const channel = require('./channel');
@@ -15,21 +14,8 @@ const main = async () => {
   const members = await user.getMembers(app);
   const channels = await channel.getChannel(app);
   const messages = await history.getAllMessages(app, channels);
-
-  const reactions = messages
-    .filter(m => m.reactions !== undefined)
-    .reduce((prev, current) => {
-      return [...prev, ...current.reactions];
-    }, []);
-
-  const reactionsModified = reactions.map(r => {
-    return {
-      ...r,
-      users: r.users.map(u => user.getUserRealName(members, u)),
-    };
-  });
-
-  const result = reaction.summaryReaction(reactionsModified);
+  const reactions = reaction.extractReactions(messages, members);
+  const result = reaction.summaryReaction(reactions);
 
   console.log(result);
 };
